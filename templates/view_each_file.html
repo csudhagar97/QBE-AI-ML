@@ -1,0 +1,43 @@
+{% extends 'main.html' %}
+
+{% block title %}
+    View Each File
+{% endblock title %}
+
+{% block content %}
+<div class="h-[90vh] w-full flex items-center justify-center relative">
+    <img src="/media/another-bg.jpg" alt="" class="h-[90vh] w-screen object-cover absolute top-0 left-0">
+   
+    <div class="w-[80vw] md:w-[60vw] lg:w-[40vw] absolute right-[15%] top-1/2 -translate-y-1/2 bg-white rounded-xl p-8 shadow-xl z-50 flex flex-col gap-6">
+        <h1 class="text-3xl font-bold">View File</h1>
+        
+        {% if decrypted_data %}
+            <div class="file-content">
+                <h2 class="text-xl font-semibold mb-4">{{ file_ins.filename }}</h2>
+                <pre class="whitespace-pre-line">{{ decrypted_data }}</pre>
+            </div>
+        {% else %}
+            <p class="error-message">{{ error_message }}</p>
+        {% endif %}
+
+        {% if partial_key_doctor %}
+            <p class="text-wrap w-full">Your key has been sent to your email. Please coordinate with the other key holder to access the file</p>
+        {% endif %}
+
+        <form method="post" class="flex flex-col gap-4">
+            {% csrf_token %}
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <label for="partial_key" class="font-semibold">Enter your Partial Key:</label>
+                <input type="text" name="partial_key" id="partial_key" class="border border-black rounded-lg p-2 px-4 focus:outline-none focus:ring focus:border-blue-300" required>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <label for="partial_key_2" class="font-semibold">Enter other Partial Key:</label>
+                <input type="text" name="partial_key_2" id="partial_key_2" class="border border-black rounded-lg p-2 px-4 focus:outline-none focus:ring focus:border-blue-300" required>
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <button type="submit" class="text-white font-semibold px-6 py-2 bg-emerald-500 hover:bg-emerald-600 cursor-pointer rounded-lg transition duration-300 ease-in-out">View File</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,28 @@
+{% extends 'main.html' %}
+{% block title %}View File{% endblock title %}
+{% block content %}
+<div class="h-[90vh] w-full flex items-center justify-center relative">
+    <img src="/media/another-bg.jpg" alt="" class="h-[90vh] w-screen object-cover absolute top-0 left-0">
+    <div class="z-50 h-full w-full p-4 h-[85vh]">
+        <h1 class="text-3xl mb-4 font-bold">User's File : </h1>
+        {% if file_type == 'jpg' %}
+            <img src="{{ file_url }}" alt="Image" class="h-[77vh] w-full object-contain">
+        {% elif file_type == 'jpeg' %}
+            <img src="{{ file_url }}" alt="Image" class="h-[77vh] w-full object-contain">
+        {% elif file_type == 'png' %}
+            <img src="{{ file_url }}" alt="Image" class="h-[77vh] w-full object-contain">
+        {% elif file_type == 'gif' %}
+            <img src="{{ file_url }}" alt="Image" class="h-[77vh] w-full object-contain">
+        {% elif file_type == 'pdf' %}
+            <embed src="{{ file_url }}" type="application/pdf" class="h-[77vh] w-full object-contain">
+        {% else %}
+            <a href="{{ file_url }}" target="_blank" class="text-xl font-bold text-green-600">View File</a>
+        {% endif %}
+        
+    </div>
+</div>
+
+<script>
+   
+</script>
+{% endblock %}

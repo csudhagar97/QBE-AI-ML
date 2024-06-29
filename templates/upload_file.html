@@ -1,0 +1,44 @@
+{% extends 'main.html' %}
+{% block title %}Upload File{% endblock title %}
+{% block content %}
+<div class="h-[90vh] w-full flex items-center justify-center relative">
+    <img src="../media/another-bg.jpg" alt="" class="h-[90vh] w-screen object-cover absolute top-0 left-0">
+    <form method="POST" enctype="multipart/form-data" class="w-[40vw] absolute right-[15%] top-1/2 -translate-y-1/2 bg-white rounded-xl p-8 shadow-xl z-50">
+        {% csrf_token %}
+        <h1 class="text-[35px] leading-[50px] font-bold mb-6">Upload Your File</h1>
+        <div class="p-12 rounded-2xl bg-zinc-200 border-dashed border-2 border-cyan-600">
+            <p class="text-center text-lg"> <span onclick="openFileInput()" class="z-[100] cursor-pointer text-xl underline font-semibold text-cyan-500">Click Here</span> To Upload Your File</p>
+            <input type="file" class="hidden" id="file" name="file" accept=".mp4,.jpg,.pdf,.jpeg,.docx">
+            <p class="hidden font-semibold text-lg text-center mt-2" id="file-result">File Uploaded!</p>
+        </div>
+        
+        <div class="mt-6">
+            <label for="doctor" class="block text-lg font-semibold text-gray-800">Select Doctor:</label>
+            <select name="doctor" id="doctor" class="block w-full px-4 py-2 mt-1 rounded-lg border border-gray-300 focus:border-cyan-500 focus:outline-none focus:ring focus:ring-cyan-200">
+                {% for doctor in doctors %}
+                    <option value="{{ doctor.id }}">{{ doctor.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 py-2 w-full mt-4 text-white text-lg font-semibold rounded-xl">Upload</button>
+ 
+            <p class="text-bold text-center text-xl mt-6"> The key shares will be shared to respective parties </p>
+
+    </form>
+</div>
+
+<script>
+    const fileInput = document.getElementById('file');
+    
+    function openFileInput() {
+        fileInput.click();
+    }
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            const result = document.getElementById('file-result');
+            result.classList.toggle('hidden');
+        }
+    })
+</script>
+{% endblock content %}

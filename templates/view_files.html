@@ -1,0 +1,22 @@
+{% extends 'main.html' %}
+{% block title %}View Files{% endblock title %}
+{% block content %}
+<div class="h-[90vh] w-full flex items-center justify-center relative">
+    <img src="../media/another-bg.jpg" alt="" class="h-[90vh] w-screen object-cover absolute top-0 left-0">
+
+    <div class="w-[50vw] absolute right-[10%] top-1/2 -translate-y-1/2 bg-white rounded-xl p-8 shadow-xl z-50">
+        <h1 class="text-[30px] font-bold leading-[35px] mb-6">View Files Uploaded by your Patients :</h1>
+        <div class="max-h-[60vh] overflow-y-scroll pr-4">
+            {% for file in all_files %}
+                <div class="bg-blue-400 rounded-xl py-3 px-6 shadow-md mb-2 ">
+                    <div class="card-body items-center flex justify-between text-white ">
+                        <h5 class="card-title">{{ file.filename }}</h5>
+                        <p class="card-text">Uploaded by: {{ file.user }}</p>
+                        <a href="{% url 'view_each_file' file.id %}" class="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 cursor-pointer rounded-lg">View File</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}d

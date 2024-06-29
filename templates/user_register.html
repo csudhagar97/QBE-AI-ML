@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Include Tailwind CSS -->
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <!-- Background Image -->
+    <img src="../media/bg.jpg" class="h-screen w-screen object-cover fixed top-0 left-0" alt="">
+    
+    <!-- Form Container -->
+    <div class=" z-50 mx-auto flex justify-center items-center relative">
+        <form method="POST" class="bg-white bg-opacity-80 shadow-md rounded-lg px-8 pt-6 pb-8 flex gap-8 mt-20 w-[50vw]">
+            {% csrf_token %}
+            <div class="w-1/2">
+                <!-- Username -->
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                    <input type="text" id="username" name="username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                
+                <!-- Password -->
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                
+                <!-- Confirm Password -->
+                <div class="mb-4">
+                    <label for="password2" class="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
+                    <input type="password" id="password2" name="password2" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                
+                <!-- First Name -->
+                <div class="mb-4">
+                    <label for="first_name" class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
+                    <input type="text" id="first_name" name="first_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                
+                <!-- Last Name -->
+                <div class="mb-4">
+                    <label for="last_name" class="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
+                    <input type="text" id="last_name" name="last_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <!-- email id -->
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email id</label>
+                    <input type="text" id="email_id" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <p class="text-sm text-center">Already have an account ? <br> <a class="text-md text-blue-500 font-semibold" href="{% url 'user_login' %}">Login Here</a> </p>
+            </div>
+            <div class="w-1/2">
+                <!-- Age -->
+                <div class="mb-4">
+                    <label for="role" class="block text-gray-700 text-sm font-bold mb-2">Role</label>
+                    <select id="role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="doctor">Doctor</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="age" class="block text-gray-700 text-sm font-bold mb-2">Age</label>
+                    <input type="number" id="age" name="age" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                
+                <!-- Gender -->
+                <div class="mb-4">
+                    <label for="gender" class="block text-gray-700 text-sm font-bold mb-2">Gender</label>
+                    <select id="gender" name="gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                
+                <!-- Blood Group -->
+                <div class="mb-4">
+                    <label for="blood_groups" class="block text-gray-700 text-sm font-bold mb-2">Blood Group</label>
+                    <select id="blood_groups" name="blood_groups" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                
+                <!-- Medical Note -->
+                <div class="mb-4">
+                    <label for="medical_note" class="block text-gray-700 text-sm font-bold mb-2">Any Note For Us about Medical History</label>
+                    <textarea id="medical_note" name="medical_note" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" rows="1"></textarea>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mt-1">Register</button>
+            </div>
+            
+            
+            
+        </form>
+       
+    </div>
+    
+</body>
+</html>

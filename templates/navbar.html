@@ -1,0 +1,40 @@
+<nav class="h-[10vh] flex justify-between px-12 bg-cyan-500 text-lg items-center text-white">
+    <a class="text-2xl font-bold" href="{% url 'home' %}">
+        {% if request.user.is_authenticated %}
+            {{ request.user.get_full_name|default:request.user.username }}
+        {% else %}
+            TeleMed
+        {% endif %}
+    </a>
+  
+  <ul class="flex gap-8 items-center">
+      <li class="nav-item active">
+          <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+      {% if request.user.is_authenticated %}
+          {% if request.user.account.user_type == 'normal' %}
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'upload_file' %}">Upload File</a>
+              </li>
+          {% endif %}
+          {% if request.user.account.user_type == 'doctor' %}
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'user_data_list' %}">Files</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{% url 'access_user_data' %}">View Users</a>
+              </li>
+          {% endif %}
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'user_logout' %}">Logout</a>
+          </li>
+      {% else %}
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'user_login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'user_register' %}">Register</a>
+          </li>
+      {% endif %}
+  </ul>
+</nav>

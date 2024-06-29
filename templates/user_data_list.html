@@ -1,0 +1,23 @@
+{% extends 'main.html' %}
+{% block title %}User Data list{% endblock title %}
+{% block content %}
+<div class="h-[90vh] w-full flex items-center justify-center relative">
+    <img src="../media/another-bg.jpg" alt="" class="h-[90vh] w-screen object-cover absolute top-0 left-0">
+    <div class="w-[50vw] absolute right-[10%] top-1/2 -translate-y-1/2 bg-white rounded-xl p-8 shadow-xl z-50">
+        <h1 class="text-[30px] font-bold leading-[35px] mb-6">View Patients Data:</h1>
+        <div class="max-h-[65vh] overflow-y-scroll pr-4">
+            {% for account in all_accounts %}
+            <div class="bg-blue-300 p-2 px-6 rounded-xl shadow-md mb-2">
+                <div class="flex flex-col gap-2">
+                    <h5 class="text-xl font-bold">{{ account.first_name }} {{ account.last_name }}</h5>
+                    <p class="card-text">Age: {{ account.age }} Blood Group: {{ account.blood_group }}</p>
+                    <p class="card-text">Gender: {{ account.gender }}</p>
+                    <p class="card-text">Medical Note:</p>
+                    <p class="card-text">{{ account.medical_note }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

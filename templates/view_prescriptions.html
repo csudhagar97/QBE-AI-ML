@@ -1,0 +1,25 @@
+{% extends 'main.html' %}
+{% block title %}View Prescriptions{% endblock title %}
+{% block content %}
+<div class="h-[90vh] w-full flex items-center justify-center relative">
+
+    <img src="../media/another-bg.jpg" alt="" class="h-[90vh] w-screen object-cover absolute top-0 left-0">
+
+    <div class="w-[50vw] absolute right-[10%] top-1/2 -translate-y-1/2 bg-white rounded-xl p-8 shadow-xl z-50">
+        <h1 class="text-[30px] font-bold leading-[35px] mb-6">View Prescription Sent by Doctor</h1>
+        <div class="max-h-[60vh] overflow-y-scroll pr-4">
+            {% for prescription in prescriptions %}
+                <div class="bg-blue-400 rounded-xl py-3 px-6 shadow-md mb-2 ">
+                    <div class="card-body items-center flex justify-between text-white ">
+                        <h5 class="card-title">{{ prescription.details }}</h5>
+                        <p class="card-text">Sent by: {{ prescription.doctor1.username }}</p>
+                        {% if prescription.prescription_file %}
+                            <a href="{{ prescription.prescription_file.url }}" download="{{ prescription.prescription_file.name }}" class="text-blue-200 hover:text-blue-400 font-medium text-sm">Download Prescription</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
