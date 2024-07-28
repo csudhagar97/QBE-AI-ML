@@ -1,0 +1,43 @@
+{% extends 'main.html' %}
+
+{% block title %}
+    Approval Requests
+{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-4">Pending Approval Requests</h1>
+
+    {% if pending_approvals %}
+        <table class="min-w-full bg-white border border-gray-200">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left">File ID</th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left">File Name</th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left">Uploaded By</th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for approval in pending_approvals %}
+                    <tr>
+                        <td class="px-6 py-4 border-b border-gray-200">{{ approval.file_id }}</td>
+                        <td class="px-6 py-4 border-b border-gray-200">{{ approval.file_name }}</td>
+                        <td class="px-6 py-4 border-b border-gray-200">{{ approval.requester }}</td>
+                        <td class="px-6 py-4 border-b border-gray-200">
+                            <form method="post" action="{% url 'handle_approval_request' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="approval_id" value="{{ approval.id }}">
+                                <button type="submit" name="action" value="approve" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Approve</button>
+                                <button type="submit" name="action" value="reject" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No pending approval requests.</p>
+    {% endif %}
+</div>
+{% endblock content %}

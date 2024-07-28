@@ -1,0 +1,60 @@
+{% extends 'main.html' %}
+
+{% block title %}
+    View Files
+{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-4">View Files</h1>
+
+    {% for file_ins in all_files %}
+    <div class="border border-gray-200 p-4 mb-4 rounded-lg flex justify-between items-center">
+        <div>
+            <h2 class="text-xl font-semibold mb-2">{{ file_ins.filename }}</h2>
+            <p>User: {{ file_ins.user }}</p>
+        </div>
+        <div class="flex">
+            {% if file_ins.is_approved %}
+                <a href="{% url 'view_each_file' file_ins.id %}" class="text-white font-semibold px-6 py-2 bg-emerald-500 hover:bg-emerald-600 cursor-pointer rounded-lg transition duration-300 ease-in-out mr-4">View File</a>
+            {% else %}
+                <form id="request-approval-form-{{ file_ins.id }}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="file_id" value="{{ file_ins.id }}">
+                    <button type="button" onclick="requestApproval({{ file_ins.id }})" class="text-white font-semibold px-6 py-2 bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg transition duration-300 ease-in-out mr-4">Request Approval</button>
+                </form>
+                <button class="text-gray-500 font-semibold px-6 py-2 bg-gray-300 cursor-not-allowed rounded-lg transition duration-300 ease-in-out" disabled>View File</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function requestApproval(fileId) {
+    const form = document.getElementById(`request-approval-form-${fileId}`);
+    const formData = new FormData(form);
+    const csrfToken = formData.get('csrfmiddlewaretoken');
+    const fileIdValue = formData.get('file_id');
+
+    fetch("{% url 'request_approval' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            file_id: fileIdValue
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload(); // Reload to update the approval status
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock content %}
