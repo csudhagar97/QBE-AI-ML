@@ -12,6 +12,7 @@ from django.core.files.base import ContentFile
 from django.http import FileResponse
 from django.core.files.storage import default_storage
 import requests
+import tensorflow as tf
 
 from attribute_telemed import settings
 from .models import Approval, FileHandle, Account
@@ -215,6 +216,9 @@ def upload_file(request):
             doctor_Email = doctor_Account.email
           
             # Send email to doctor
+            print("file_name=================================================CALLL",file_name)
+            print("doctor_Email=================================================CALLL",doctor_Email)
+            print("uploaded_by=================================================CALLL",uploaded_by)
             send_Email(file_name,doctor_Email, uploaded_by)
             
             # Send email to user
@@ -588,32 +592,99 @@ def upload_medical_record(request):
         form = MedicalRecordForm()
     return render(request, 'upload_medical_record.html', {'form': form})
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from .models import MedicalRecord
+from django.contrib.auth.decorators import login_required
+
+EMERGENCY_CODES = [
+    'heart attack', 'stroke', 'allergic reaction', 'asthma attack', 'severe bleeding',
+    'unconscious', 'chest pain', 'difficulty breathing', 'severe burn', 'head injury',
+    'poisoning', 'drug overdose', 'severe abdominal pain', 'broken bone', 'electric shock',
+    'drowning', 'severe allergic reaction', 'anaphylactic shock', 'cardiac arrest', 'seizure',
+    'high fever', 'gunshot wound', 'stabbing', 'major trauma', 'hypothermia', 'heat stroke',
+    'labor complications', 'miscarriage', 'snake bite', 'scorpion sting'
+]
+import os
+import pandas as pd
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import MedicalRecord, Account
+import json
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.files.storage import FileSystemStorage
+from django.contrib import messages
+import pandas as pd
+import tensorflow as tf
+from .models import MedicalRecord
+import os
+from django.conf import settings
+
+import csv
+import numpy as np
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import MedicalRecord
+import tensorflow as tf
+
+# Load the pre-trained model (ensure this path is correct)
+model = tf.keras.models.load_model('D:/Demo Project/23july-onwork/Project_viva/model.h5')
+print("============0======================")
+
 @login_required
-def view_medical_records(request):
-    user = request.user
-    print("USER DETAILS AT VIEW MEDICAL RECORD",user)
-    if user.account.user_type in [ 'medical_staff']:
-        records = MedicalRecord.objects.all()
+def emergency_access(request, record_id):
+    print("============1======================")
+    record = get_object_or_404(MedicalRecord, id=record_id)
+    if request.method == 'POST' and request.FILES.get('ecg_report'):
+        ecg_report = request.FILES['ecg_report']
+        print("============2======================")
+        try:
+            print("============Inside TRY======================")
+            # Read the CSV file and prepare the data for prediction
+            data = []
+            reader = csv.reader(ecg_report.read().decode('utf-8').splitlines())
+            for row in reader:
+                data.append(list(map(float, row)))
+            data = np.array(data)
+            print("============Inside TRY 0=====================")
+            # Predict using the model
+            prediction = model.predict(data)
+            is_abnormal = prediction[0][0] > 0.5  # Adjust this threshold as necessary
+
+            if is_abnormal:
+                # Call send_notification function
+                send_notification_data = {
+                    'record_id': record.id
+                }
+                send_notification(request, send_notification_data)
+                
+                return redirect(record.file.url)
+            else:
+                error_message = "The ECG report indicates a normal heartbeat. Access denied."
+        except Exception as e:
+            error_message = f"Error processing ECG report: {e}"
     else:
-        records = MedicalRecord.objects.filter(user=user)
-    print("=========================MEDICAL RECORD",records)
-    return render(request, 'view_medical_records.html', {'records': records})
+        error_message = None
+        print("============Inside TRY 1=====================")
+    return render(request, 'emergency_access.html', {'record': record, 'error_message': error_message})
+
 
 @login_required
 @require_POST
-def send_notification(request):
-    data = json.loads(request.body)
+def send_notification(request, data):
     record_id = data.get('record_id')
-    
+
     try:
         record = get_object_or_404(MedicalRecord, pk=record_id)
-        print("==========record.file.name===========", record.file.name)
-        print("==========request.user.username===========", request.user.username)
         record_uploader = Account.objects.get(user=record.user_id)
-        print("==========record_uploader.email===========", record_uploader.email)
-        file_name =record.file.name.split('/')[-1]
-        # Implement your notification logic here
-        # For example, sending an email notification
+        file_name = record.file.name.split('/')[-1]
+
         send_mail(
             'Emergency File View Notification',
             f'''
@@ -638,10 +709,79 @@ def send_notification(request):
             [record_uploader.email],
             fail_silently=False,
         )
-        print("Email sent===============on Emergency records=====================")
         return JsonResponse({'success': True, 'message': 'Notification sent successfully.'})
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)})
+
+
+import os
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+from django.shortcuts import render, redirect
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+
+# Load the trained model
+model_path = os.path.join(settings.BASE_DIR, 'model.h5')
+model = tf.keras.models.load_model(model_path)
+
+from django.shortcuts import render, redirect
+from django.core.files.storage import FileSystemStorage
+import pandas as pd
+import numpy as np
+import os
+from django.conf import settings
+from .models import MedicalRecord  # Import your MedicalRecord model
+
+def validate_ecg(request):
+    if request.method == 'POST':
+        ecg_file = request.FILES['ecg_file']
+        fs = FileSystemStorage()
+        filename = fs.save(ecg_file.name, ecg_file)
+        uploaded_file_url = fs.url(filename)
+
+        # Load and preprocess the uploaded ECG CSV file
+        df = pd.read_csv(os.path.join(settings.MEDIA_ROOT, filename))
+        x_ecg = df.values
+
+        if x_ecg.shape[1] != 188:
+            error = "Invalid ECG file format. Expected 188 columns."
+            return render(request, 'emergency_access.html', {'error': error})
+
+        # Predict using the trained model
+        predictions = (model.predict(x_ecg) > 0.5).astype("int32")
+        abnormal_count = np.sum(predictions)
+
+        # Logic to provide access based on prediction
+        if abnormal_count > 0:
+            # Example logic to provide access - customize as needed
+            record_id = request.POST.get('record_id')
+            if not record_id:
+                error = "Record ID is missing."
+                return render(request, 'emergency_access.html', {'error': error})
+
+            try:
+                medical_record = MedicalRecord.objects.get(id=record_id)
+                # Grant access (this logic depends on your implementation)
+                # ...
+                return redirect('access_granted_url', record_id=medical_record.id)
+            except MedicalRecord.DoesNotExist:
+                error = "Medical record not found."
+                return render(request, 'emergency_access.html', {'error': error})
+        else:
+            error = "ECG does not indicate an emergency."
+            return render(request, 'emergency_access.html', {'error': error})
+
+    return render(request, 'emergency_access.html')
+
+
+
+@login_required
+def view_medical_records(request):
+    records = MedicalRecord.objects.all()
+    return render(request, 'view_medical_records.html', {'records': records})
+
 
 
 

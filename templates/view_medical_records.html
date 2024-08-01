@@ -3,7 +3,7 @@
 {% block title %}View Medical Records{% endblock title %}
 {% block content %}
 <div class="h-[90vh] w-full flex flex-col items-center justify-center relative">
-    <img src="{% static 'another-bg.jpg' %}" alt="" class="h-[90vh] w-screen object-cover absolute top-0 left-0">
+    <img src="{% static 'another-bg.jpg' %}" alt="Background" class="h-[90vh] w-screen object-cover absolute top-0 left-0">
     <div class="w-[80vw] bg-white rounded-xl p-8 shadow-xl z-50">
         <h1 class="text-[35px] leading-[50px] font-bold mb-6">Medical Records</h1>
         {% if records %}
@@ -13,7 +13,7 @@
                         <p class="font-semibold">User: {{ record.user.username }}</p>
                         <p>Description: {{ record.description }}</p>
                         <p>Uploaded on: {{ record.uploaded_at }}</p>
-                        <a href="{{ record.file.url }}" class="text-cyan-500 underline" target="_blank" onclick="sendNotification({{ record.id }})">View File</a>
+                        <a href="{% url 'emergency_access' record.id %}" class="text-cyan-500 underline">View File</a>
                     </div>
                 {% endfor %}
             </div>
@@ -22,26 +22,4 @@
         {% endif %}
     </div>
 </div>
-
-<script>
-function sendNotification(recordId) {
-    fetch("{% url 'send_notification' %}", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({
-            record_id: recordId
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.success) {
-            alert(data.message);
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-</script>
 {% endblock content %}

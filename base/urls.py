@@ -24,7 +24,12 @@ urlpatterns = [
     path('my_doctors/', views.my_doctors, name='my_doctors'),
     path('upload-medical-record/', views.upload_medical_record, name='upload_medical_record'),
     path('view-medical-records/', views.view_medical_records, name='view_medical_records'),
+    path('validate-ecg/', views.emergency_access, name='validate_ecg'),  # Add this line
+    path('validate_ecg/', views.validate_ecg, name='validate_ecg'),
+    path('emergency-access/<int:record_id>/', views.emergency_access, name='emergency_access'),
+    
+
+
     path('send-notification/', views.send_notification, name='send_notification'),
    # path('test-dropdown/', test_user_dropdown, name='test-dropdown')
-
 ]
